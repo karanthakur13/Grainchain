@@ -101,7 +101,7 @@ const UpdateOrder = () => {
     handleFormFieldChange("gtype", e);
   };
   return (
-    <div>
+    <div className="container mx-auto p-8">
       <Scanner onScanResult={handleScanResult} />
       {shipmentData && (
         <div>

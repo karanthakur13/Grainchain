@@ -120,7 +120,7 @@ const CreateOrder = () => {
     handleFormFieldChange("gtype", e);
   };
   return (
-    <div>
+    <div className="container mx-auto p-8">
       <div className="flex gap-4">
         <Card extra="w-full p-4 h-full">
           <form>

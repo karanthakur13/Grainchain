@@ -1,14 +1,9 @@
 import { React, useState, useEffect } from "react";
 import Scanner from "components/scanner";
-import {
-  APIProvider,
-  Map,
-  useMap,
-  AdvancedMarker,
-  Marker,
-} from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import { ethers } from "ethers";
 import GrainNft from "../abis/GrainNft.json";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Dashboard = () => {
   const [shipmentData, setShipmentData] = useState("");
@@ -17,6 +12,7 @@ const Dashboard = () => {
   const [info, setInfo] = useState();
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
 
   useEffect(() => {
     loadBlockchainData();
@@ -30,7 +26,6 @@ const Dashboard = () => {
 
   const Search = async (_gid) => {
     const lot = await contract.getLot(_gid);
-    console.log(lot);
     return lot;
   };
 
@@ -41,11 +36,37 @@ const Dashboard = () => {
     setIsLoading(false);
   };
 
+  const handleMarkerClick = (markerLabel) => {
+    console.log(`Marker ${markerLabel} clicked!`);
+
+    const markerInfo = info.states[markerLabel - 1];
+    const timestamp = markerInfo[2].toNumber();
+    const weight = markerInfo[3].toNumber();
+    const temperature = markerInfo[5].toNumber();
+    const humidity = markerInfo[6].toNumber();
+    const exceededTemp = markerInfo[8].toNumber();
+    const date = new Date(timestamp * 1000);
+
+    setSelectedState({
+      addressOwnership: markerInfo[0],
+      description: markerInfo[1],
+      certificate: markerInfo[4],
+      timestamp: date.toLocaleString(),
+      weight: weight,
+      certificate: markerInfo[4],
+      temp: temperature,
+      humidity: humidity,
+      location: markerInfo[7],
+      exceededTemp: exceededTemp,
+    });
+  };
+
   const loadBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     setProvider(provider);
 
     const network = await provider.getNetwork();
+    console.log(ethers.version);
 
     const data = new ethers.Contract(
       "0x0c13eBe2D69b3F16Ca87B61BbA887B3BeC206184",
@@ -60,34 +81,153 @@ const Dashboard = () => {
     const parsedNum = parseInt(result);
     setNum(parsedNum);
   };
-  const coordinates = [
-    { lat: 30.35529948136283, lng: 76.36943012658881 },
-    { lat: 28.7041, lng: 77.1025 },
-  ];
+
   return (
-    <div>
+    <div className="container mx-auto p-8">
       <Scanner onScanResult={handleScanResult} />
-      {shipmentData && (
-        <div style={{ height: "100vh", width: "100%" }}>
-          <APIProvider apiKey="AIzaSyAu1pHyPLT7wuyKmDSJ3oYezHGDbl2HCWU">
-            <Map
-              center={coordinates[0]}
-              zoom={10}
-              mapId={process.env.NEXT_PUBLIC_MAP_ID}
-            >
-              {/* Add markers for each coordinate with numbers */}
-              {coordinates.map((coord, index) => (
-                <Marker
-                  key={index}
-                  position={coord}
-                  label={(index + 1).toString()}
-                />
-              ))}
-            </Map>
-          </APIProvider>
-        </div>
+      {info && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          transition={{ duration: 0.5 }}
+          style={{
+            margin: "20px",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 0 20px rgba(0, 0, 0, 0.1)",
+            background: "#fff",
+            color: "#444",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              height: "60vh",
+              width: "100%",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+              overflow: "hidden",
+            }}
+          >
+            <APIProvider apiKey="AIzaSyAu1pHyPLT7wuyKmDSJ3oYezHGDbl2HCWU">
+              <Map
+                center={{
+                  lat: parseFloat(info.states[0].location.latitude),
+                  lng: parseFloat(info.states[0].location.longitude),
+                }}
+                zoom={6}
+              >
+                {info.states.map((state, index) => (
+                  <Marker
+                    key={index}
+                    position={{
+                      lat: parseFloat(state.location.latitude),
+                      lng: parseFloat(state.location.longitude),
+                    }}
+                    label={(index + 1).toString()}
+                    onClick={() => handleMarkerClick(index + 1)}
+                  />
+                ))}
+              </Map>
+            </APIProvider>
+          </div>
+
+          <div
+            style={{
+              marginTop: "20px",
+              borderRadius: "8px",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+              background: "#f8f8f8",
+              padding: "20px",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gridGap: "20px",
+            }}
+          >
+            <InfoBox
+              label="Address Ownership"
+              value={selectedState?.addressOwnership}
+            />
+            <InfoBox label="Description" value={selectedState?.description} />
+            <InfoBox label="Certificate" value={selectedState?.certificate} />
+            <InfoBox label="Timestamp" value={selectedState?.timestamp} />
+            <InfoBox label="Weight" value={selectedState?.weight} />
+            <InfoBox label="Temperature" value={selectedState?.temp} />
+            <InfoBox label="Humidity" value={selectedState?.humidity} />
+            <InfoBox
+              label="Exceeded Temperature"
+              value={selectedState?.exceededTemp}
+            />
+          </div>
+        </motion.div>
       )}
     </div>
+  );
+};
+
+const InfoBox = ({ label, value }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleBoxClick = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
+
+  const displayValue =
+    typeof value === "object" ? JSON.stringify(value) : value;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      style={{
+        background: "#fff",
+        padding: "15px",
+        borderRadius: "8px",
+        boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+        textAlign: "center",
+        cursor: "pointer",
+      }}
+    >
+      <strong
+        style={{
+          display: "block",
+          marginBottom: "8px",
+          fontSize: "14px",
+          color: "#444",
+        }}
+      >
+        {label}
+      </strong>
+      <span style={{ fontSize: "16px", color: "#666" }}>{displayValue}</span>
+
+      <AnimatePresence>
+        {isPopupOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "#fff",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+              zIndex: 1,
+            }}
+          >
+            <p>Additional information..</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

@@ -37,7 +37,7 @@ const TransferLot = () => {
     console.log(form);
   };
   return (
-    <div>
+    <div className="container mx-auto p-8">
       <Scanner onScanResult={handleScanResult} />
       {shipmentData && (
         <div>
