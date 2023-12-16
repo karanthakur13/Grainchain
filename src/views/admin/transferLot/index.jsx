@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import Scanner from "components/scanner";
 import Card from "components/card";
 import {
@@ -15,11 +15,39 @@ import GrainNft from "../abis/GrainNft.json";
 const TransferLot = () => {
   const [shipmentData, setShipmentData] = useState("");
   const [num, setNum] = useState(0);
+  const [account, setAccount] = useState(null);
+  const [provider, setProvider] = useState(null);
+  const [contract, setContract] = useState(null);
 
   const [form, setForm] = useState({
     destAcc: "",
   });
+  const loadBlockchainData = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    setProvider(provider);
 
+    const network = await provider.getNetwork();
+
+    const data = new ethers.Contract(
+      "0x0c13eBe2D69b3F16Ca87B61BbA887B3BeC206184",
+      GrainNft,
+      provider
+    );
+    setContract(data);
+  };
+  const connectHandler = async () => {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const account = ethers.utils.getAddress(accounts[0]);
+    setAccount(account);
+  };
+  useEffect(() => {
+    connectHandler();
+  }, []);
+  useEffect(() => {
+    loadBlockchainData();
+  }, []);
   const handleFormFieldChange = (fieldName, e) => {
     setForm({ ...form, [fieldName]: e.target.value });
   };
@@ -32,15 +60,29 @@ const TransferLot = () => {
     const parsedNum = parseInt(result);
     setNum(parsedNum);
   };
+  const transferOrder = async (from, to, num) => {
+    const signer = await provider.getSigner();
+    let transaction = await contract
+      .connect(signer)
+      .transferFrom(from, to, num);
+    const receipt = await transaction.wait();
 
+    return { success: true, receipt };
+  };
   const handleSubmit = async (e) => {
-    console.log(form);
+    e.preventDefault();
+    const data = await transferOrder(account, form.destAcc, num);
+    console.log(data);
   };
   return (
     <div className="container mx-auto p-8">
       <Scanner onScanResult={handleScanResult} />
       {shipmentData && (
         <div>
+          <Card extra="w-full p-4 h-full">
+            <p>Current User Address: {account}</p>
+          </Card>
+
           <Card extra="w-full p-4 h-full">
             <form>
               {/* Image */}

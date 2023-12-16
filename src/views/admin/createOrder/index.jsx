@@ -27,10 +27,18 @@ const CreateOrder = () => {
   const [longitude, setLongitude] = useState("");
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [provider, setProvider] = useState(null);
+  const [account, setAccount] = useState(null);
   const [contract, setContract] = useState(null);
   const [qrData, setQrData] = useState(null);
   const [url, setUrl] = useState("");
 
+  const connectHandler = async () => {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const account = ethers.utils.getAddress(accounts[0]);
+    setAccount(account);
+  };
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       setLatitude(position.coords.latitude.toString());
@@ -48,6 +56,9 @@ const CreateOrder = () => {
 
   useEffect(() => {
     loadBlockchainData();
+  }, []);
+  useEffect(() => {
+    connectHandler();
   }, []);
 
   useEffect(() => {
@@ -204,7 +215,7 @@ const CreateOrder = () => {
             </p>
             <p className="text-black">Temperature: 10 </p>
             <p className="text-black">Humidity: 10</p>
-            <span className=" text-black">Current User Address : 123x</span>
+            <span className=" text-black">User : {account}</span>
           </div>
         </Card>
       </div>

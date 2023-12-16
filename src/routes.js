@@ -2,9 +2,6 @@ import React from "react";
 
 // Admin Imports
 import MainDashboard from "views/admin/default";
-import NFTMarketplace from "views/admin/marketplace";
-import Profile from "views/admin/profile";
-import DataTables from "views/admin/tables";
 import RTLDefault from "views/rtl/default";
 import CreateLot from "views/admin/createOrder";
 import UpdateLot from "views/admin/updateOrder";
@@ -37,18 +34,18 @@ const routes = [
     component: <CreateLot />,
   },
   {
-    name: "Update Lot",
-    layout: "/admin",
-    path: "update-lot",
-    icon: <MdUpdate className="h-6 w-6" />,
-    component: <UpdateLot />,
-  },
-  {
     name: "Transfer Lot",
     layout: "/admin",
     path: "transfer-lot",
     icon: <MdEmojiTransportation className="h-6 w-6" />,
     component: <TransferLot />,
+  },
+  {
+    name: "Update Lot",
+    layout: "/admin",
+    path: "update-lot",
+    icon: <MdUpdate className="h-6 w-6" />,
+    component: <UpdateLot />,
   },
   /*  */
 ];

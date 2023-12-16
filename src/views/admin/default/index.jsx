@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [num, setNum] = useState(0);
   const [info, setInfo] = useState();
+  const [Oinfo, setOInfo] = useState();
   const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
@@ -26,13 +27,21 @@ const Dashboard = () => {
 
   const Search = async (_gid) => {
     const lot = await contract.getLot(_gid);
+
     return lot;
+  };
+
+  const SearchO = async (_gid) => {
+    const owner = await contract.ownerOf(_gid);
+    return owner;
   };
 
   const fetchproduct = async (_gid) => {
     setIsLoading(true);
     const data = await Search(num);
+    const odata = await SearchO(num);
     setInfo(data);
+    setOInfo(odata);
     setIsLoading(false);
   };
 
@@ -112,13 +121,19 @@ const Dashboard = () => {
               overflow: "hidden",
             }}
           >
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <InfoBox label="Grain-ID" value={info[0].toNumber()} />
+              <InfoBox label="Manufacturer" value={info[1]} />
+              <InfoBox label="Grain type" value={info[2]} />
+            </div>
+
             <APIProvider apiKey="AIzaSyAu1pHyPLT7wuyKmDSJ3oYezHGDbl2HCWU">
               <Map
                 center={{
                   lat: parseFloat(info.states[0].location.latitude),
                   lng: parseFloat(info.states[0].location.longitude),
                 }}
-                zoom={6}
+                zoom={5}
               >
                 {info.states.map((state, index) => (
                   <Marker
