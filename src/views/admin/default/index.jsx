@@ -55,6 +55,12 @@ const Dashboard = () => {
     const humidity = markerInfo[6].toNumber();
     const exceededTemp = markerInfo[8].toNumber();
     const date = new Date(timestamp * 1000);
+    let qlog;
+    if (exceededTemp === 0) {
+      qlog = "Fit for consumption";
+    } else {
+      qlog = "Not fit for consumption";
+    }
 
     setSelectedState({
       addressOwnership: markerInfo[0],
@@ -66,7 +72,7 @@ const Dashboard = () => {
       temp: temperature,
       humidity: humidity,
       location: markerInfo[7],
-      exceededTemp: exceededTemp,
+      exceededTemp: qlog,
     });
   };
 
@@ -124,6 +130,7 @@ const Dashboard = () => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <InfoBox label="Grain-ID" value={info[0].toNumber()} />
               <InfoBox label="Manufacturer" value={info[1]} />
+              <InfoBox label="Current Owner" value={Oinfo} />
               <InfoBox label="Grain type" value={info[2]} />
             </div>
 
@@ -163,7 +170,7 @@ const Dashboard = () => {
             }}
           >
             <InfoBox
-              label="Address Ownership"
+              label="Ownership Address "
               value={selectedState?.addressOwnership}
             />
             <InfoBox label="Description" value={selectedState?.description} />
@@ -172,10 +179,7 @@ const Dashboard = () => {
             <InfoBox label="Weight" value={selectedState?.weight} />
             <InfoBox label="Temperature" value={selectedState?.temp} />
             <InfoBox label="Humidity" value={selectedState?.humidity} />
-            <InfoBox
-              label="Exceeded Temperature"
-              value={selectedState?.exceededTemp}
-            />
+            <InfoBox label="Quality Log" value={selectedState?.exceededTemp} />
           </div>
         </motion.div>
       )}

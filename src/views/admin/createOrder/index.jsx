@@ -47,6 +47,23 @@ const CreateOrder = () => {
   }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://webhook.site/821f5072-8076-480f-927f-1f6dde6bacd6"
+        );
+        const data = await response.json(); // Assuming the response is JSON, adjust accordingly
+
+        console.log("Webhook API Response:", data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000); // Update every second
