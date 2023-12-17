@@ -107,11 +107,6 @@ contract GrainChain is ERC721URIStorage, IERC721Supply {
         return true;
     }
 
-    /*    function searchProduct(uint256 _gid) public view returns (State[] memory) {
-        Lot_Token storage lot = allLots[_gid];
-        return (lot.states);
-    } */
-
     function publishNFT(string memory _tokenURI) public {
         _setTokenURI(tokenIdCounter - 1, _tokenURI);
 

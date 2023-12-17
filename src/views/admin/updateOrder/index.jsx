@@ -8,10 +8,45 @@ import {
   FormHelperText,
   Input,
   Button,
+  Box,
+  Text,
   Select,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import GrainNft from "../abis/GrainNft.json";
+const WarehouseLogsItem = ({ label, value }) => {
+  return (
+    <Box mb={4}>
+      <Text fontSize="lg" fontWeight="bold" color="navy.700" mb={1}>
+        {label}
+      </Text>
+      <Text color="black">{value}</Text>
+    </Box>
+  );
+};
+
+const WarehouseLogs = ({ latitude, longitude, currentDateTime, account }) => {
+  return (
+    <Box mb={8} w="full" rounded-lg p={4} shadow="md">
+      <Text fontSize="xl" fontWeight="bold" color="#1A365D" mb={4}>
+        Warehouse Logs
+      </Text>
+      <WarehouseLogsItem label="Latitude" value={latitude} />
+      <WarehouseLogsItem label="Longitude" value={longitude} />
+      <WarehouseLogsItem
+        label="Date"
+        value={currentDateTime.toLocaleDateString()}
+      />
+      <WarehouseLogsItem
+        label="Time"
+        value={currentDateTime.toLocaleTimeString()}
+      />
+      <WarehouseLogsItem label="Temperature" value="10" />
+      <WarehouseLogsItem label="Humidity" value="10" />
+      <WarehouseLogsItem label="User" value={account} />
+    </Box>
+  );
+};
 
 const UpdateOrder = () => {
   const [shipmentData, setShipmentData] = useState("");
@@ -170,34 +205,34 @@ const UpdateOrder = () => {
                 </FormControl>
               </form>
             </Card>
-            <Card extra={"w-full p-4 h-full"}>
-              <div className="mb-8 w-full">
-                <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-                  Warehouse Logs
-                </h4>
-
-                <p className="text-black">Latitude : {latitude}</p>
-                <p className="text-black"> Longitude : {longitude}</p>
-                <p className="text-black">
-                  Date: {currentDateTime.toLocaleDateString()}
-                </p>
-                <p className="text-black">
-                  Time: {currentDateTime.toLocaleTimeString()}
-                </p>
-                <p className="text-black">Temperature: 10 </p>
-                <p className="text-black">Humidity: 10</p>
-                <span className=" text-black">User: {account}</span>
-              </div>
+            <Card extra="w-full p-4 h-full bg-green-200 rounded-lg shadow-md">
+              <WarehouseLogs
+                latitude={latitude}
+                longitude={longitude}
+                currentDateTime={currentDateTime}
+                account={account}
+              />
             </Card>
           </div>
-          <Card extra="w-full p-4 h-full mt-10">
+          <Card extra="w-40 p-4 h-full mx-80 mt-10 bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow-md">
             <Button
               type="submit"
-              colorScheme="blue"
-              size="md" // Adjust the size as needed (sm, md, lg)
-              mx="auto" // Center the button horizontally
+              colorScheme="teal"
+              size="sm"
+              mx="auto"
               mt={4}
               onClick={handleSubmit}
+              color="white"
+              _hover={{ bg: "purple.600" }}
+              _active={{ bg: "purple.800" }}
+              _focus={{ outline: "none" }}
+              sx={{
+                transition:
+                  "background 0.3s ease-in-out, transform 0.2s ease-in-out",
+                transform: "scale(1)",
+                _hover: { transform: "scale(1.05)" },
+                _active: { transform: "scale(0.95)" },
+              }}
             >
               Submit
             </Button>

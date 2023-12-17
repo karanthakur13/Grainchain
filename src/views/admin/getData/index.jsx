@@ -15,41 +15,7 @@ import { ethers } from "ethers";
 import QrCode from "qrcode";
 import { FaAddressBook } from "react-icons/fa";
 
-const WarehouseLogsItem = ({ label, value }) => {
-  return (
-    <Box mb={4}>
-      <Text fontSize="lg" fontWeight="bold" color="navy.700" mb={1}>
-        {label}
-      </Text>
-      <Text color="black">{value}</Text>
-    </Box>
-  );
-};
-
-const WarehouseLogs = ({ latitude, longitude, currentDateTime, account }) => {
-  return (
-    <Box mb={8} w="full" rounded-lg p={4} shadow="md">
-      <Text fontSize="xl" fontWeight="bold" color="#1A365D" mb={4}>
-        Warehouse Logs
-      </Text>
-      <WarehouseLogsItem label="Latitude" value={latitude} />
-      <WarehouseLogsItem label="Longitude" value={longitude} />
-      <WarehouseLogsItem
-        label="Date"
-        value={currentDateTime.toLocaleDateString()}
-      />
-      <WarehouseLogsItem
-        label="Time"
-        value={currentDateTime.toLocaleTimeString()}
-      />
-      <WarehouseLogsItem label="Temperature" value="10" />
-      <WarehouseLogsItem label="Humidity" value="10" />
-      <WarehouseLogsItem label="User" value={account} />
-    </Box>
-  );
-};
-
-const CreateOrder = () => {
+const GetData = () => {
   const [form, setForm] = useState({
     gtype: "",
     gdesc: "",
@@ -189,51 +155,19 @@ const CreateOrder = () => {
   return (
     <div className="container mx-auto p-8">
       <div className="flex gap-4">
-        <Card extra="w-full p-4 h-full bg-blue-200 rounded-lg shadow-md">
+        <Card extra="w-full p-4 h-full">
           <form>
-            <FormControl id="grain" className="mb-4">
-              <FormLabel className="text-lg font-bold">Grain Type</FormLabel>
-              <Select
-                className="w-full rounded-md border p-2 focus:border-blue-500 focus:outline-none"
-                onChange={handleGrainChange}
-              >
-                <option className="mt-2 ">Wheat</option>
-                <option className="mt-2 ">Rice</option>
-              </Select>
-              <FormHelperText className="mt-2 text-gray-600">
-                Enter the Grain type.
-              </FormHelperText>
-            </FormControl>
-
             <FormControl id="image" className="mb-4">
-              <FormLabel className="text-lg font-bold">
-                Grain Description
-              </FormLabel>
-              <Input
-                type="url"
-                name="description"
-                placeholder="Enter description"
-                className="w-full rounded-md border p-2 focus:border-blue-500 focus:outline-none"
-                onChange={(e) => handleFormFieldChange("gdesc", e)}
-              />
-              <FormHelperText className="mt-2 text-gray-600">
-                Enter grain description.
-              </FormHelperText>
-            </FormControl>
-
-            <FormControl id="image" className="mb-4">
-              <FormLabel className="text-lg font-bold">
-                Grain Certificate
-              </FormLabel>
+              <FormLabel className="text-lg font-bold">UID</FormLabel>
               <Input
                 type="url"
                 name="certificate"
-                placeholder="Enter certificate URL"
+                placeholder="Enter grain UID"
                 className="w-full rounded-md border p-2 focus:border-blue-500 focus:outline-none"
                 onChange={(e) => handleFormFieldChange("gcerti", e)}
               />
               <FormHelperText className="mt-2 text-gray-600">
-                Enter URL for grain certificate.
+                Enter UID for grain information.
               </FormHelperText>
             </FormControl>
 
@@ -251,14 +185,6 @@ const CreateOrder = () => {
               </FormHelperText>
             </FormControl>
           </form>
-        </Card>
-        <Card extra="w-full p-4 h-full bg-green-200 rounded-lg shadow-md">
-          <WarehouseLogs
-            latitude={latitude}
-            longitude={longitude}
-            currentDateTime={currentDateTime}
-            account={account}
-          />
         </Card>
       </div>
       <Card extra="w-40 p-4 h-full mx-80 mt-10 bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow-md">
@@ -284,14 +210,11 @@ const CreateOrder = () => {
           Submit
         </Button>
       </Card>
-
       {qrData && (
-        <div className="mt-8 rounded-lg bg-purple-200 p-4 shadow-md">
-          <p className="font-semibold text-green-700">
-            Grain Registered Successfully
-          </p>
-          <div className="mt-4 flex items-center justify-center">
-            <img src={url} alt="qrcode" className="rounded-md" />
+        <div>
+          Grain Registered Successfully{" "}
+          <div className="mt-[26px] flex items-center justify-center ">
+            <img src={url} alt="qrcode" />
           </div>
         </div>
       )}
@@ -299,4 +222,4 @@ const CreateOrder = () => {
   );
 };
 
-export default CreateOrder;
+export default GetData;
